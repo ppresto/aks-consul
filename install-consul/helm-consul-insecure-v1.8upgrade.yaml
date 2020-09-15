@@ -1,0 +1,32 @@
+global:
+  domain: consul
+  datacenter: hashidc1
+  image: 'consul:1.8.0'
+
+server:
+  replicas: 3
+  # Upgrade Process...
+  # Set updatePartition = replicas.  Only inst #'s' > then this value will be updated.  So start with no changes.
+  # helm upgrade sec hashicorp/consul -f helm-consul-insecure-v1.8upgrade.yaml --dry-run -n consul
+  # helm upgrade sec hashicorp/consul -f helm-consul-insecure-v1.8upgrade.yaml -n consul
+  # Reduce updateaPartition value by 1, run helm upgrade, repeat until value is 0.
+  # Upgrade is complete.  You can remove updatePartition.
+  #
+  #updatePartition: 3
+  bootstrapExpect: 3
+  disruptionBudget:
+    enabled: true
+    maxUnavailable: 0
+
+client:
+  enabled: true
+  grpc: true
+
+ui:
+  enabled: true
+  service:
+    type: "LoadBalancer"
+
+connectInject:
+  enabled: true
+  imageEnvoy: envoyproxy/envoy:v1.13.1

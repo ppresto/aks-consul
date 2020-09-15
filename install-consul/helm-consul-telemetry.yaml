@@ -1,0 +1,38 @@
+global:
+  domain: consul
+  datacenter: hashidc1
+  image: 'consul:1.7.0'
+
+server:
+  replicas: 3
+  bootstrapExpect: 3
+  disruptionBudget:
+    enabled: true
+    maxUnavailable: 0
+
+client:
+  enabled: true
+  grpc: true
+
+ui:
+  enabled: true
+  service:
+    type: "LoadBalancer"
+
+connectInject:
+  enabled: true
+  imageEnvoy: envoyproxy/envoy:v1.13.1
+  # inject an envoy sidecar into every new pod,
+  # except for those with annotations that prevent injection
+  default: true
+  # these settings enable L7 metrics collection and are new in 1.5
+  centralConfig:
+    enabled: true
+    # set the default protocol (can be overwritten with annotations)
+    defaultProtocol: 'http'
+    # tell envoy where  to send metrics
+    proxyDefaults: |
+      {
+      "envoy_dogstatsd_url": "udp://127.0.0.1:9125"
+      }
+  

@@ -1,0 +1,28 @@
+global:
+  datacenter: uswest1
+  domain: consul  #service-name.service.consul
+
+ui:
+  service:
+    type: "LoadBalancer"
+syncCatalog:
+  enabled: "-"
+  image: null
+  default: true # true will sync by default, otherwise requires annotation
+  toConsul: true
+  toK8S: true
+  k8sPrefix: null
+
+connectInject:
+  enabled: true
+
+client:
+  enabled: true
+  grpc: true
+
+server:
+  replicas: 1
+  bootstrapExpect: 1
+  disruptionBudget:
+    enabled: true
+    maxUnavailable: 0

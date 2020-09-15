@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: default
+  name: dns-custom
+spec:
+  containers:
+    - name: test
+      image: praqma/network-multitool
+  dnsPolicy: "None"
+  dnsConfig:
+    nameservers:
+      - 10.0.227.203
+    searches:
+      - service.consul
+    options:
+      - name: ndots
+        value: "2"
+      - name: edns0

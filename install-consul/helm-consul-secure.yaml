@@ -1,0 +1,48 @@
+global:
+  domain: consul
+  datacenter: hashidc1
+  image: 'consul:1.8.0'
+
+  gossipEncryption:
+    secretName: "consul-gossip-encryption-key"
+    secretKey: "key"
+
+  tls:
+    enabled: true
+    enableAutoEncrypt: true
+    verify: true
+    # Set verify to false if enabling ACL's initially with an insecure config.
+    #verify: false
+
+  acls:
+    manageSystemACLs: true
+
+client:
+  enabled: true
+  grpc: true
+
+ui:
+  enabled: true
+  service:
+    type: "LoadBalancer"
+
+server:
+  replicas: 3
+  #updatePartition: 3
+  bootstrapExpect: 3
+  disruptionBudget:
+    enabled: true
+    maxUnavailable: 0
+
+connectInject:
+  enabled: true
+  imageEnvoy: envoyproxy/envoy:v1.13.1
+  centralConfig:
+    enabled: true
+    # set the default protocol (can be overwritten with annotations)
+    defaultProtocol: 'http'
+    # tell envoy where  to send metrics
+    proxyDefaults: |
+      {
+      "envoy_dogstatsd_url": "udp://127.0.0.1:9125"
+      }
