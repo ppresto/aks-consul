@@ -1,5 +1,3 @@
-#!/bin/sh
-cat <<EOF > svc_pub-api.json
 {
     "Service": { 
         "Name": "pub-api",
@@ -24,9 +22,3 @@ cat <<EOF > svc_pub-api.json
         ]
     }
 }
-EOF
-
-curl \
-    --request PUT \
-    --data @svc_pub-api.json \
-    "http://$HOST_IP:8500/v1/agent/service/register"

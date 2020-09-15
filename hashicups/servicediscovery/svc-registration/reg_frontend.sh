@@ -1,5 +1,3 @@
-#!/bin/sh
-cat <<EOF > svc_frontend.json
 {
     "Service": { 
         "Name": "frontend",
@@ -27,9 +25,3 @@ cat <<EOF > svc_frontend.json
         ]
     }
 }
-EOF
-
-curl \
-    --request PUT \
-    --data @svc_frontend.json \
-    "http://$HOST_IP:8500/v1/agent/service/register"

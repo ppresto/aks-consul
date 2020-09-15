@@ -1,5 +1,3 @@
-#!/bin/sh
-cat <<EOF > svc_postgres.json
 {
     "Service": { 
         "Name": "postgres",
@@ -14,9 +12,3 @@ cat <<EOF > svc_postgres.json
         }
     }
 }
-EOF
-
-curl \
-    --request PUT \
-    --data @svc_postgres.json \
-    "http://$HOST_IP:8500/v1/agent/service/register"

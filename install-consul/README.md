@@ -232,4 +232,3 @@ echo "http://$(kubectl get svc emojify-ingress -o jsonpath={.spec.clusterIP}):30
 
 
 ## Next Steps...
-[Setup a Vault Namespace Project](../vault-project-template "Setup a Vault Namespace Project")
