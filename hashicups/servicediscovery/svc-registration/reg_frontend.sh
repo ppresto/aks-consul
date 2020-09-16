@@ -7,7 +7,7 @@
             {
                 "id": "frontend-tcp-80",
                 "name": "TCP Port Listening - 80",
-                "tcp": "localhost:80",
+                "tcp": "0.0.0.0:80",
                 "interval": "10s",
                 "timeout": "2s"
             },
