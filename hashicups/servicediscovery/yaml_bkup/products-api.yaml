@@ -1,4 +1,5 @@
 ---
+# Service to expose web frontend
 
 apiVersion: v1
 kind: Service
@@ -35,30 +36,7 @@ data:
     }
 
 ---
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: product-api-init
-data:
-  config: |
-    cat <<EOF > /app/service.json
-    {
-      "Name": "product-api",
-      "Tags": ["application","production"],
-      "Address": "${POD_IP}",
-      "Port": 9090,
-      "Check": {
-        "Method": "GET",
-        "HTTP": "http://${POD_IP}:9090/coffees",
-        "Interval": "1s"
-      }
-    }
-    EOF
-
----
-
-# Product API
+# Web frontend
 
 apiVersion: apps/v1
 kind: Deployment
@@ -87,12 +65,6 @@ spec:
           items:
           - key: config
             path: conf.json
-      - name: consul-init
-        configMap:
-          name: product-api-init
-          items:
-          - key: config
-            path: service.sh
       containers:
         - name: products-api
           image: hashicorpdemoapp/product-api:v0.0.11
@@ -114,19 +86,3 @@ spec:
             - name: config
               mountPath: /config
               readOnly: true
-      initContainers:
-        - name: consul-init
-          image: ppresto/consul-init:0.2.9
-          volumeMounts:
-            - name: consul-init
-              mountPath: /consul
-              readOnly: false
-          env:
-          - name: POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-          - name: HOST_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.hostIP

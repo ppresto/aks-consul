@@ -54,32 +54,7 @@ data:
         }
     }
 
-
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: frontend-init
-data:
-  config: |
-    cat <<EOF > /app/service.json
-    {
-      "Name": "frontend",
-      "Tags": ["application","production"],
-      "Address": "${POD_IP}",
-      "Port": 80,
-      "Check": {
-        "Method": "GET",
-        "HTTP": "http://${POD_IP}:80",
-        "Interval": "1s"
-      }
-    }
-    EOF
-
----
-
-# Web Frontend
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -107,12 +82,6 @@ spec:
           items:
           - key: config
             path: default.conf
-      - name: consul-init
-        configMap:
-          name: frontend-init
-          items:
-          - key: config
-            path: service.sh
       containers:
         - name: frontend
           image: hashicorpdemoapp/frontend:v0.0.3
@@ -122,19 +91,3 @@ spec:
             - name: config
               mountPath: /etc/nginx/conf.d
               readOnly: true
-      initContainers:
-        - name: consul-init
-          image: ppresto/consul-init:0.2.9
-          volumeMounts:
-            - name: consul-init
-              mountPath: /consul
-              readOnly: false
-          env:
-          - name: POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-          - name: HOST_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.hostIP

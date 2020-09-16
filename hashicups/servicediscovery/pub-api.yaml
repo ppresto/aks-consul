@@ -45,6 +45,8 @@ data:
 
 ---
 
+# Public API - GraphQL
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -65,6 +67,13 @@ spec:
         prometheus.io/port: "9102"
     spec:
       serviceAccountName: public-api
+      volumes:
+      - name: consul-init
+        configMap:
+          name: pub-api-init
+          items:
+          - key: config
+            path: service.sh
       containers:
         - name: public-api
           image: hashicorpdemoapp/public-api:v0.0.1
@@ -91,11 +100,4 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.hostIP
-      volumes:
-      - name: consul-init
-        configMap:
-          name: frontend-init
-          items:
-          - key: config
-            path: service.sh
       
