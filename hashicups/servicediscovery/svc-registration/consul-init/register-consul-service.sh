@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sh -x /consul/service.sh
+
 curl \
     --request PUT \
     --data @service.json \

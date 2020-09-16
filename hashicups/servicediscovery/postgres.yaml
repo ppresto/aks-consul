@@ -22,6 +22,29 @@ metadata:
 automountServiceAccountToken: true
 
 ---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+data:
+  config: |
+    cat <<EOF > /app/service.json
+    {
+      "Name": "postgres",
+      "Tags": ["application","production"],
+      "Address": "${POD_IP}",
+      "Port": 5432,
+      "Check": {
+        "TCP": "${POD_IP}:5432",
+        "Interval": "2s",
+        "Timeout": "10s"
+      }
+    }
+    EOF
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -57,6 +80,29 @@ spec:
           volumeMounts:
             - mountPath: "/var/lib/postgresql/data"
               name: "pgdata"
+      initContainers:
+        - name: consul-init
+          image: ppresto/consul-init:0.2.9
+          volumeMounts:
+            - name: consul-init
+              mountPath: /consul
+              readOnly: false
+          env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: HOST_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+
       volumes:
         - name: pgdata
           emptyDir: {}
+        - name: consul-init
+        configMap:
+          name: frontend-init
+          items:
+          - key: config
+            path: service.sh

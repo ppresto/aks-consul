@@ -1,0 +1,11 @@
+{
+      "Name": "frontend",
+      "Tags": ["application","production"],
+      "Address": "${POD_IP}",
+      "Port": 80,
+      "Check": {
+          "Method": "GET",
+          "HTTP": "http://${POD_IP}:80",
+          "Interval": "1s"
+      }
+    }

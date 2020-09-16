@@ -22,6 +22,29 @@ metadata:
 automountServiceAccountToken: true
 
 ---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pub-api-init
+data:
+  config: |
+    cat <<EOF > /app/service.json
+    {
+      "Name": "pub-api",
+      "Tags": ["application","production"],
+      "Address": "${POD_IP}",
+      "Port": 8080,
+      "Check": {
+        "Method": "GET",
+        "HTTP": "http://${POD_IP}:8080",
+        "Interval": "1s"
+      }
+    }
+    EOF
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,3 +75,27 @@ spec:
               value: ":8080"
             - name: PRODUCTS_API_URI
               value: "http://product-api.service.consul:9090"
+      initContainers:
+        - name: consul-init
+          image: ppresto/consul-init:0.2.9
+          volumeMounts:
+            - name: consul-init
+              mountPath: /consul
+              readOnly: false
+          env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: HOST_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+      volumes:
+      - name: consul-init
+        configMap:
+          name: frontend-init
+          items:
+          - key: config
+            path: service.sh
+      

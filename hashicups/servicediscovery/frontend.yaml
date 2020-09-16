@@ -62,17 +62,19 @@ metadata:
   name: frontend-init
 data:
   config: |
+    cat <<EOF > /app/service.json
     {
       "Name": "frontend",
       "Tags": ["application","production"],
       "Address": "${POD_IP}",
       "Port": 80,
       "Check": {
-          "Method": "GET",
-          "HTTP": "http://${POD_IP}:80",
-          "Interval": "1s"
+        "Method": "GET",
+        "HTTP": "http://${POD_IP}:80",
+        "Interval": "1s"
       }
     }
+    EOF
 
 ---
 apiVersion: apps/v1
@@ -107,7 +109,7 @@ spec:
           name: frontend-init
           items:
           - key: config
-            path: service.json
+            path: service.sh
       containers:
         - name: frontend
           image: hashicorpdemoapp/frontend:v0.0.3
@@ -119,11 +121,11 @@ spec:
               readOnly: true
       initContainers:
         - name: consul-init
-          image: ppresto/consul-init:0.1
+          image: ppresto/consul-init:0.2.9
           volumeMounts:
             - name: consul-init
-              mountPath: /app
-              readOnly: true
+              mountPath: /consul
+              readOnly: false
           env:
           - name: POD_IP
             valueFrom:
