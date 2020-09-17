@@ -2,23 +2,23 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: public-api
+  name: pub-api
   labels:
-    app: public-api
+    app: pub-api
 spec:
   type: ClusterIP
   ports:
     - port: 8080
       targetPort: 8080
   selector:
-    app: public-api
+    app: pub-api
 
 ---
 
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: public-api
+  name: pub-api
 automountServiceAccountToken: true
 
 ---
@@ -50,23 +50,23 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: public-api
+  name: pub-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: public-api
-      app: public-api
+      service: pub-api
+      app: pub-api
   template:
     metadata:
       labels:
-        service: public-api
-        app: public-api
+        service: pub-api
+        app: pub-api
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9102"
     spec:
-      serviceAccountName: public-api
+      serviceAccountName: pub-api
       volumes:
       - name: consul-init
         configMap:
@@ -75,14 +75,14 @@ spec:
           - key: config
             path: service.sh
       containers:
-        - name: public-api
+        - name: pub-api
           image: hashicorpdemoapp/public-api:v0.0.1
           ports:
             - containerPort: 8080
           env:
             - name: BIND_ADDRESS
               value: ":8080"
-            - name: PRODUCTS_API_URI
+            - name: PRODUCT_API_URI
               value: "http://product-api.service.consul:9090"
       initContainers:
         - name: consul-init

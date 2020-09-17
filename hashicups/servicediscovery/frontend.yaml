@@ -32,7 +32,7 @@ data:
     server {
         listen       80;
         server_name  localhost;
-
+        resolver kube-dns.kube-system.svc.cluster.local valid=10s;
         #charset koi8-r;
         #access_log  /var/log/nginx/host.access.log  main;
 
