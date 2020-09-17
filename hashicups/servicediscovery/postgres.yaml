@@ -36,9 +36,10 @@ data:
       "Address": "${POD_IP}",
       "Port": 5432,
       "Check": {
+        "DeregisterCriticalServiceAfter": "1m",
         "TCP": "${POD_IP}:5432",
-        "Interval": "2s",
-        "Timeout": "10s"
+        "Interval": "5s",
+        "Timeout": "4s"
       }
     }
     EOF

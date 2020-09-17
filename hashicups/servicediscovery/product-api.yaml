@@ -29,7 +29,7 @@ metadata:
 data:
   config: |
     {
-      "db_connection": "host=postgres.service.consul port=5432 user=postgres password=password dbname=products sslmode=disable",
+      "db_connection": "host=postgres.query.consul port=5432 user=postgres password=password dbname=products sslmode=disable",
       "bind_address": ":9090",
       "metrics_address": ":9103"
     }
@@ -49,9 +49,11 @@ data:
       "Address": "${POD_IP}",
       "Port": 9090,
       "Check": {
+        "DeregisterCriticalServiceAfter": "1m",
         "Method": "GET",
         "HTTP": "http://${POD_IP}:9090/coffees",
-        "Interval": "1s"
+        "Interval": "5s",
+        "Timeout": "4s"
       }
     }
     EOF

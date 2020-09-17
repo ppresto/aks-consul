@@ -44,7 +44,7 @@ data:
         # Proxy pass the api location to save CORS
         # Use location exposed by Consul connect
         location /api {
-          set $upstream http://pub-api.service.consul:8080;
+          set $upstream http://pub-api.query.consul:8080;
           proxy_pass "$upstream";
         }
 
@@ -68,11 +68,26 @@ data:
       "Tags": ["application","production"],
       "Address": "${POD_IP}",
       "Port": 80,
-      "Check": {
-        "Method": "GET",
-        "HTTP": "http://${POD_IP}:80",
-        "Interval": "1s"
-      }
+      "Checks": [
+        {
+          "DeregisterCriticalServiceAfter": "1m",
+          "Method": "GET",
+          "HTTP": "http://${POD_IP}:80",
+          "Interval": "5s",
+          "Timeout": "4s"
+        },
+        {
+          "Id": "frontend-http-80",
+          "Name": "Nginx Gateway - 80",
+          "HTTP": "http://${POD_IP}:80/api",
+          "TLS_SKIP_VERIFY": true,
+          "METHOD": "POST",
+          "Header": {"Content-Type": ["application/json"]},
+          "Body": "{\"query\":\"{coffees{id name image price teaser description}}\"}",
+          "Interval": "5s",
+          "Timeout": "2s"
+        }
+      ]
     }
     EOF
 

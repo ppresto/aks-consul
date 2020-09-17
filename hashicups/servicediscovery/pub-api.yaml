@@ -36,9 +36,11 @@ data:
       "Address": "${POD_IP}",
       "Port": 8080,
       "Check": {
+        "DeregisterCriticalServiceAfter": "1m",
         "Method": "GET",
         "HTTP": "http://${POD_IP}:8080",
-        "Interval": "1s"
+        "Interval": "5s",
+        "Timeout": "4s"
       }
     }
     EOF
@@ -83,7 +85,7 @@ spec:
             - name: BIND_ADDRESS
               value: ":8080"
             - name: PRODUCT_API_URI
-              value: "http://product-api.service.consul:9090"
+              value: "http://product-api.query.consul:9090"
       initContainers:
         - name: consul-init
           image: ppresto/consul-init:0.2.9
